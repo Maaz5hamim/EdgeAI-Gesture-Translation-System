@@ -95,7 +95,7 @@ int main(void)
 	int cnt = 0;
 	char out_str[64];
 	struct sensor_value odr_attr;
-	const struct device *const lsm6dsl_dev = DEVICE_DT_GET_ONE(st_lsm6dsl);
+	const struct device *const lsm6dsl_dev = DEVICE_DT_GET_ONE(st_lsm6ds3);
 
 	if (!device_is_ready(lsm6dsl_dev)) {
 		printk("sensor: device not ready.\n");
@@ -136,43 +136,33 @@ int main(void)
 	}
 
 	while (1) {
-		/* Erase previous */
+		sensor_sample_fetch_chan(lsm6dsl_dev, SENSOR_CHAN_ACCEL_XYZ);
+		sensor_channel_get(lsm6dsl_dev, SENSOR_CHAN_ACCEL_X, &accel_x_out);
+		sensor_channel_get(lsm6dsl_dev, SENSOR_CHAN_ACCEL_Y, &accel_y_out);
+		sensor_channel_get(lsm6dsl_dev, SENSOR_CHAN_ACCEL_Z, &accel_z_out);
+
+		sensor_sample_fetch_chan(lsm6dsl_dev, SENSOR_CHAN_GYRO_XYZ);
+		sensor_channel_get(lsm6dsl_dev, SENSOR_CHAN_GYRO_X, &gyro_x_out);
+		sensor_channel_get(lsm6dsl_dev, SENSOR_CHAN_GYRO_Y, &gyro_y_out);
+		sensor_channel_get(lsm6dsl_dev, SENSOR_CHAN_GYRO_Z, &gyro_z_out);
+
 		printk("\0033\014");
-		printf("LSM6DSL sensor samples:\n\n");
+		printf("LSM6DS3 sensor samples:\n\n");
 
-		/* lsm6dsl accel */
 		sprintf(out_str, "accel x:%f ms/2 y:%f ms/2 z:%f ms/2",
-							  sensor_value_to_double(&accel_x_out),
-							  sensor_value_to_double(&accel_y_out),
-							  sensor_value_to_double(&accel_z_out));
+				sensor_value_to_double(&accel_x_out),
+				sensor_value_to_double(&accel_y_out),
+				sensor_value_to_double(&accel_z_out));
 		printk("%s\n", out_str);
 
-		/* lsm6dsl gyro */
 		sprintf(out_str, "gyro x:%f dps y:%f dps z:%f dps",
-							   sensor_value_to_double(&gyro_x_out),
-							   sensor_value_to_double(&gyro_y_out),
-							   sensor_value_to_double(&gyro_z_out));
+				sensor_value_to_double(&gyro_x_out),
+				sensor_value_to_double(&gyro_y_out),
+				sensor_value_to_double(&gyro_z_out));
 		printk("%s\n", out_str);
 
-#if defined(CONFIG_LSM6DSL_EXT0_LIS2MDL)
-		/* lsm6dsl external magn */
-		sprintf(out_str, "magn x:%f gauss y:%f gauss z:%f gauss",
-							   sensor_value_to_double(&magn_x_out),
-							   sensor_value_to_double(&magn_y_out),
-							   sensor_value_to_double(&magn_z_out));
-		printk("%s\n", out_str);
-#endif
+		printk("loop:%d\n\n", ++cnt);
 
-#if defined(CONFIG_LSM6DSL_EXT0_LPS22HB)
-		/* lsm6dsl external press/temp */
-		sprintf(out_str, "press: %f kPa - temp: %f deg",
-			sensor_value_to_double(&press_out), sensor_value_to_double(&temp_out));
-		printk("%s\n", out_str);
-#endif
-
-		printk("loop:%d trig_cnt:%d\n\n", ++cnt, lsm6dsl_trig_cnt);
-
-		print_samples = 1;
 		k_sleep(K_MSEC(2000));
 	}
 }

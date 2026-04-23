@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: Apache-2.0
+
+description: |
+  STMicroelectronics LSM6DS3 6-axis accelerometer and gyroscope accessed through
+  I2C bus
+
+compatible: "st,lsm6ds3"
+
+include: ["i2c-device.yaml", "st,lsm6ds3-common.yaml"]
