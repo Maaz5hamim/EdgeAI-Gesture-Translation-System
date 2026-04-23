@@ -3,7 +3,7 @@
  *
  * Wiring:
  *   Breakout SDA  -> P1.02  (PORT 1, pin 2)
- *   Breakout SCX  -> P1.03  (PORT 1, pin 3)
+ *   Breakout SCL  -> P1.03  (PORT 1, pin 3)
  *   Breakout CS   -> 3V3    (force I2C mode)
  *   Breakout SAD  -> GND    (I2C address 0x6A)
  *   Breakout 3V3  -> VDD.IO
