@@ -1,10 +1,11 @@
 import pandas as pd
 import os
 
-# Path to the data and label directories, and the output file name
-data_dir = 'data/Kaggle_IMU_Dataset/data/data'
-label_dir = 'data/Kaggle_IMU_Dataset/data/label'
-output_dir = 'data/Kaggle_IMU_Dataset/restructured_data'
+root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+data_dir = os.path.join(root, 'data/Kaggle_IMU_Dataset/data/data')
+label_dir = os.path.join(root, 'data/Kaggle_IMU_Dataset/data/label')
+output_dir = os.path.join(root, 'data/Kaggle_IMU_Dataset/restructured_data')
 
 # 1: SLIDE_UP, 2: SLIDE_DOWN, 3: SLIDE_LEFT, 4: SLIDE_RIGHT
 target_labels = [1, 2, 3, 4]
