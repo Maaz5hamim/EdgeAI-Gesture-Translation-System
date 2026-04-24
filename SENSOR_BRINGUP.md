@@ -25,29 +25,32 @@ loop, sliding window extraction, TFLite Micro inference, and BLE gesture streami
 |-------------|--------|-------|
 | VIN | VDD.IO | 3.3V power |
 | GND | GND | Ground |
-| SDA | P1.02 | I2C data |
-| SCL | P1.03 | I2C clock |
-| CS | 3V3 (tie high) | Selects I2C mode over SPI |
+| SDA | P1.11 | I2C data |
+| SCL | P1.12 | I2C clock |
+| CS | VDD.IO (tie high) | Selects I2C mode over SPI |
 | SAO | GND (tie low) | Sets I2C address to 0x6A |
-| INT1 | P1.00 | Data-ready interrupt (trigger) |
+| INT1 | P1.13 | Data-ready interrupt (trigger) |
+
+> **Note:** P1.02 and P1.03 are NFC pins on the nRF54L15 DK and are not routed
+> to GPIO by default. P1.11/P1.12/P1.13 are free GPIO pins confirmed working.
 
 ## Design Decisions
 
 **IMU: LSM6DS3 breakout module**
 The LSM6DS3TR-C is available as a bare chip only, which requires PCB-level
-soldering. A breakout module is used instead for prototyping. The Zephyr
-`lsm6dsl` driver is register-compatible with the LSM6DS3, so no driver
-changes are needed.
+soldering. A breakout module is used instead for prototyping. Zephyr has no
+upstream LSM6DS3 driver; an out-of-tree driver is included in `drivers/lsm6ds3/`,
+patched from the `lsm6dsl` driver with WHO_AM_I changed from 0x6A to 0x69.
 
 **Interface: I2C (not SPI)**
 I2C requires only 2 signal wires (SDA + SCL) vs 4 for SPI. At 400 kHz fast
 mode with 6 channels × 2 bytes × 104 Hz, bus utilization is well under 1%,
 so SPI's higher bandwidth is unnecessary.
 
-**I2C controller: i2c21 on P1.02 / P1.03**
+**I2C controller: i2c21 on P1.11 / P1.12**
 The nRF54L15 DK exposes three ports (P0, P1, P2). P2 is occupied by the
-onboard SPI flash. P0 and P1 pins 4–14 are used by UART, buttons, and LEDs.
-P1.02 and P1.03 are the first free pins on PORT 1 and are routed to `i2c21`.
+onboard SPI flash. P1.02 and P1.03 are NFC pins not routed to GPIO by default.
+P1.11 and P1.12 are free GPIO pins routed to `i2c21`.
 
 **I2C address: 0x6A (SAO tied low)**
 The SAO pin selects between 0x6A (low) and 0x6B (high). Tying low gives the
@@ -61,7 +64,7 @@ output data rate; 104 Hz is the closest standard rate supported by the chip.
 The INT1 pin pulses when a new sample is ready (~104 Hz). This wakes the MCU
 via GPIO interrupt rather than polling on a timer, giving more precise sample
 timing and lower CPU overhead. Controlled by
-`CONFIG_LSM6DSL_TRIGGER_GLOBAL_THREAD=y` in `prj.conf`.
+`CONFIG_LSM6DS3_TRIGGER_GLOBAL_THREAD=y` in `prj.conf`.
 
 **Window size: 50 samples**
 Each inference window is 50 samples × 6 channels × 2 bytes = 600 bytes.
@@ -79,19 +82,19 @@ on the USB serial port at 115200 baud.
 ## Sample Output
 
 ```console
-LSM6DSL sensor samples:
-
-accel x:-3.184000 ms/2 y:-0.697000 ms/2 z:9.207000 ms/2
-gyro x:0.065000 dps y:-0.029000 dps z:0.002000 dps
-loop:1 trig_cnt:1
-
-<repeats every 2 seconds>
+*** Booting nRF Connect SDK v3.2.1 ***
+[00:00:00.040] <inf> imu: IMU started at 104 Hz
+[00:00:01.002] <inf> imu: sample rate: 103 Hz
+[00:00:01.052] <inf> main: accel x:-22 mg y:-593 mg z:816 mg | gyro x:2559 mdps y:-5731 mdps z:-1364 mdps
 ```
 
-## Next Steps
+Gyro values at rest reflect the LSM6DS3's zero-rate offset (up to ±10 dps
+per datasheet). This is expected and corrected during model training normalization.
 
-1. Confirm sensor readings over serial console
-2. Replace 2-second print loop with 100 Hz ring buffer (`k_timer` + `k_msgq`)
-3. Implement sliding window extraction (50-sample, 6-channel)
-4. Integrate TFLite Micro or Edge Impulse inference (INT8, CNN/GRU)
-5. Add BLE GATT notifications for classified gestures
+## Status
+
+- **Stage 1 ✓** — LSM6DS3 detected on I2C, accel/gyro confirmed
+- **Stage 2 ✓** — 104 Hz interrupt-driven sampling, k_msgq ring buffer, ~103 Hz confirmed
+- **Stage 3** — Sliding window extraction (next)
+- **Stage 4** — TFLite Micro / Edge Impulse inference
+- **Stage 5** — BLE GATT gesture streaming
