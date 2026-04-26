@@ -1,0 +1,62 @@
+cmake:
+  application:
+    configuration-dir: '/Users/maazshamim/gesture_app'
+    source-dir: '/Users/maazshamim/gesture_app'
+  board:
+    name: 'nrf54l15dk'
+    path:
+     - '/opt/nordic/ncs/v3.2.1/zephyr/boards/nordic/nrf54l15dk'
+    qualifiers: 'nrf54l15/cpuapp'
+    revision: ''
+  devicetree:
+    bindings-dirs:
+     - '/Users/maazshamim/gesture_app/dts/bindings'
+     - '/opt/nordic/ncs/v3.2.1/nrf/dts/bindings'
+     - '/opt/nordic/ncs/v3.2.1/zephyr/dts/bindings'
+    extra-user-files:
+     - 'boards/nrf54l15dk_nrf54l15_cpuapp.overlay'
+    files:
+     - '/opt/nordic/ncs/v3.2.1/zephyr/boards/nordic/nrf54l15dk/nrf54l15dk_nrf54l15_cpuapp.dts'
+     - '/Users/maazshamim/gesture_app/boards/nrf54l15dk_nrf54l15_cpuapp.overlay'
+     - 'boards/nrf54l15dk_nrf54l15_cpuapp.overlay'
+    include-dirs:
+     - '/Users/maazshamim/gesture_app/dts'
+     - '/opt/nordic/ncs/v3.2.1/nrf/include'
+     - '/opt/nordic/ncs/v3.2.1/nrf/dts/common'
+     - '/opt/nordic/ncs/v3.2.1/nrf/dts/riscv'
+     - '/opt/nordic/ncs/v3.2.1/nrf/dts/arm'
+     - '/opt/nordic/ncs/v3.2.1/nrf/dts'
+     - '/opt/nordic/ncs/v3.2.1/zephyr/include'
+     - '/opt/nordic/ncs/v3.2.1/zephyr/include/zephyr'
+     - '/opt/nordic/ncs/v3.2.1/zephyr/dts/common'
+     - '/opt/nordic/ncs/v3.2.1/zephyr/dts/vendor'
+     - '/opt/nordic/ncs/v3.2.1/zephyr/dts/rx'
+     - '/opt/nordic/ncs/v3.2.1/zephyr/dts/x86'
+     - '/opt/nordic/ncs/v3.2.1/zephyr/dts/xtensa'
+     - '/opt/nordic/ncs/v3.2.1/zephyr/dts/sparc'
+     - '/opt/nordic/ncs/v3.2.1/zephyr/dts/riscv'
+     - '/opt/nordic/ncs/v3.2.1/zephyr/dts/posix'
+     - '/opt/nordic/ncs/v3.2.1/zephyr/dts/arm64'
+     - '/opt/nordic/ncs/v3.2.1/zephyr/dts/arm'
+     - '/opt/nordic/ncs/v3.2.1/zephyr/dts/arc'
+     - '/opt/nordic/ncs/v3.2.1/zephyr/dts'
+    user-files:
+     - '/Users/maazshamim/gesture_app/boards/nrf54l15dk_nrf54l15_cpuapp.overlay'
+  kconfig:
+    files:
+     - '/opt/nordic/ncs/v3.2.1/zephyr/boards/nordic/nrf54l15dk/nrf54l15dk_nrf54l15_cpuapp_defconfig'
+     - '/Users/maazshamim/gesture_app/prj.conf'
+     - '/Users/maazshamim/gesture_app/build/gesture_app/zephyr/misc/generated/extra_kconfig_options.conf'
+     - '/Users/maazshamim/gesture_app/build/gesture_app/zephyr/.config.sysbuild'
+    user-files:
+     - '/Users/maazshamim/gesture_app/prj.conf'
+  toolchain:
+    name: 'zephyr'
+    path: '/opt/nordic/ncs/toolchains/322ac893fe/opt/zephyr-sdk'
+  vendor-specific:
+    nordic:
+      svdfile: '/opt/nordic/ncs/v3.2.1/modules/hal/nordic/nrfx/bsp/stable/mdk/nrf54l15_application.svd'
+  zephyr:
+    version: '4.2.99'
+    zephyr-base: '/opt/nordic/ncs/v3.2.1/zephyr'
+version: '0.1.0'

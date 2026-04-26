@@ -1,0 +1,13 @@
+# Target labels
+ gesture_app
+# Source files and their labels
+/Users/maazshamim/gesture_app/build/_sysbuild/sysbuild/images/CMakeFiles/gesture_app
+/Users/maazshamim/gesture_app/build/_sysbuild/sysbuild/images/CMakeFiles/gesture_app.rule
+/Users/maazshamim/gesture_app/build/_sysbuild/sysbuild/images/CMakeFiles/gesture_app-complete.rule
+/Users/maazshamim/gesture_app/build/_sysbuild/sysbuild/images/gesture_app-prefix/src/gesture_app-stamp/gesture_app-build.rule
+/Users/maazshamim/gesture_app/build/_sysbuild/sysbuild/images/gesture_app-prefix/src/gesture_app-stamp/gesture_app-configure.rule
+/Users/maazshamim/gesture_app/build/_sysbuild/sysbuild/images/gesture_app-prefix/src/gesture_app-stamp/gesture_app-download.rule
+/Users/maazshamim/gesture_app/build/_sysbuild/sysbuild/images/gesture_app-prefix/src/gesture_app-stamp/gesture_app-install.rule
+/Users/maazshamim/gesture_app/build/_sysbuild/sysbuild/images/gesture_app-prefix/src/gesture_app-stamp/gesture_app-mkdir.rule
+/Users/maazshamim/gesture_app/build/_sysbuild/sysbuild/images/gesture_app-prefix/src/gesture_app-stamp/gesture_app-patch.rule
+/Users/maazshamim/gesture_app/build/_sysbuild/sysbuild/images/gesture_app-prefix/src/gesture_app-stamp/gesture_app-update.rule

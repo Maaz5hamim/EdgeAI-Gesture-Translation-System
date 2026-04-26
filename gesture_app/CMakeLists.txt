@@ -8,20 +8,5 @@ list(APPEND DTS_ROOT ${CMAKE_CURRENT_SOURCE_DIR})
 find_package(Zephyr REQUIRED HINTS $ENV{ZEPHYR_BASE})
 project(gesture_recognition)
 
-FILE(GLOB app_sources src/*.c)
+file(GLOB app_sources src/*)
 target_sources(app PRIVATE ${app_sources})
-
-# TensorFlow Lite Micro path
-set(TFLM_PATH ${ZEPHYR_BASE}/../modules/lib/tflite-micro)
-
-# Application sources
-target_sources(app PRIVATE
-    src/main.c
-    src/gesture_inference.c
-)
-
-# Include directories
-target_include_directories(app PRIVATE
-    ${CMAKE_CURRENT_SOURCE_DIR}/src
-    ${TFLM_PATH}
-)

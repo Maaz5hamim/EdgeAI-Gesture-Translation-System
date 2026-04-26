@@ -1,0 +1,7 @@
+default: gesture_app
+build_dir: /Users/maazshamim/gesture_app/build
+domains:
+  - name: gesture_app
+    build_dir: /Users/maazshamim/gesture_app/build/gesture_app
+flash_order:
+  - gesture_app
