@@ -1,6 +1,12 @@
 # editors
 *.swp
 *~
+.vscode
+.west
 
-# build
-/build*/
+gesture_app/build/
+gesture_app/modules/
+gesture_app/optional/
+gesture_app/tools/
+gesture_app/zephyr/
+gesture_app/drivers/
