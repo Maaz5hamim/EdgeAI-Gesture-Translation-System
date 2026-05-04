@@ -3,19 +3,10 @@ import pandas as pd
 from pathlib import Path
 from tqdm import tqdm
 import warnings
+from constant import FEATURE_COLS, WINDOW_SIZE
 warnings.filterwarnings('ignore')
 
-FILTERED_LABELS = [1, 2, 3, 4]
 
-FEATURE_COLS = [
-    'timestamp',
-    'Imu1_linear_accleration_x', 
-    'Imu1_linear_accleration_y', 
-    'Imu1_linear_accleration_z',
-    'Imu1_angular_velocity_x', 
-    'Imu1_angular_velocity_y', 
-    'Imu1_angular_velocity_z'
-]
 
 def find_matching_files(data_dir, labels_dir):
     """
@@ -92,11 +83,8 @@ def load_label_file(label_path):
         df = pd.read_csv(label_path)
 
         label = int(df['label'].iloc[0])
-
-        if label in FILTERED_LABELS:
-            return label
         
-        return None
+        return label
         
     except Exception as e:
         print(f"✗ Error loading label from {label_path.name}: {e}")
@@ -128,26 +116,24 @@ def load_all_data(matched_files):
     
     sequences = []
     labels = []
-    
-    print(f"\nProcessing {len(matched_files)} files...")
-    
-    for file_info in tqdm(matched_files, desc="Loading"):
-        # Load label
-        label = load_label_file(file_info['label_path'])
-        if label is None:
-            continue
 
-        # Load data
+    print(f"\nProcessing {len(matched_files)} files...")
+
+    for file_info in tqdm(matched_files, desc="Loading"):
+        label = load_label_file(file_info['label_path'])
         data = load_data_file(file_info['data_path'])
         
-        sequences.append(data)
-        labels.append(label)
-    
-    labels = np.array(labels)
+        # VALIDATION: Only keep windows that are exactly 100x6
+        if data is not None and data.shape == (WINDOW_SIZE, len(FEATURE_COLS)) and label is not None:
+            sequences.append(data)
+            labels.append(label)
+        else:
+            # This identifies the "jagged" files during consolidation
+            print(f"Skipping {file_info['name']}: Invalid shape {data.shape if data is not None else 'None'}")
     
     return sequences, labels
 
-def save_consolidated_data(sequences, labels, output_path='imu_gesture_data.npz'):
+def save_consolidated_data(sequences, labels, output_path):
     """
     Save all data in a single compressed NumPy file
     """
@@ -155,14 +141,12 @@ def save_consolidated_data(sequences, labels, output_path='imu_gesture_data.npz'
     print("SAVING CONSOLIDATED DATA")
     print("=" * 80)
     
-    features_array = np.empty(len(sequences), dtype=object)
-    
-    for i, features in enumerate(sequences):
-        features_array[i] = features
+    features = np.array(sequences, dtype=np.float32)
+    labels = np.array(labels)
 
     np.savez_compressed(
         output_path,
-        features=features_array,
+        features=features,
         labels=labels,
     )
     
@@ -174,45 +158,10 @@ def save_consolidated_data(sequences, labels, output_path='imu_gesture_data.npz'
 
     return output_path
 
-def load_consolidated_data(filepath='imu_gesture_data.npz'):
-    """
-    Load the consolidated data file
-    
-    Returns:
-        sequences: list of dicts with 'timestamps' and 'features'
-        labels: numpy array of gesture labels
-        metadata: list of metadata dicts
-    """
-
-    data = np.load(filepath, allow_pickle=True)
-    
-    timestamps_array = data['timestamps']
-    features_array = data['features']
-    labels = data['labels']
-    metadata = data['metadata']
-    
-    # Reconstruct sequences
-    sequences = []
-    for i in range(len(labels)):
-        sequences.append({
-            'timestamps': timestamps_array[i],
-            'features': features_array[i],
-            'stats': {
-                'n_samples': len(timestamps_array[i]),
-                'duration': timestamps_array[i][-1] - timestamps_array[i][0] if len(timestamps_array[i]) > 1 else 0
-            }
-        })
-    
-    print(f"✓ Loaded {len(sequences)} sequences")
-    print(f"  Gesture types: {len(set(labels))}")
-    print(f"  Features per sample: {sequences[0]['features'].shape[1]}")
-    
-    return sequences, labels, list(metadata)
-
 if __name__ == "__main__":
-    DATA_DIR = '/Users/maazshamim/Library/Mobile Documents/com~apple~CloudDocs/GitHub/EdgeAI-Gesture-Translation-System/data/Kaggle_IMU_Dataset/data/data_clean'     
-    LABELS_DIR = '/Users/maazshamim/Library/Mobile Documents/com~apple~CloudDocs/GitHub/EdgeAI-Gesture-Translation-System/data/Kaggle_IMU_Dataset/data/label'         
-    OUTPUT_FILE = 'imu_gesture_data.npz' 
+    DATA_DIR = './dataset/data'     
+    LABELS_DIR = './dataset/label'      
+    OUTPUT_FILE = 'dataset/gesture_data_consolidated.npz' 
     
     # Step 1: Find matching files
     matched_files = find_matching_files(DATA_DIR, LABELS_DIR)
@@ -222,20 +171,3 @@ if __name__ == "__main__":
     
     # Step 3: Save consolidated data
     save_consolidated_data(sequences, labels, OUTPUT_FILE)
-
-    
-    # ========================================================================
-    # TEST LOADING
-    # ========================================================================
-    
-    # if sequences is not None:
-    #     print("\n" + "=" * 80)
-    #     print("TESTING DATA LOADING")
-    #     print("=" * 80)
-        
-    #     # Test loading the saved file
-    #     sequences_test, labels_test, metadata_test = load_consolidated_data(OUTPUT_FILE)
-        
-    #     print(f"\n✓ Successfully loaded and verified data!")
-    #     print(f"  Example sequence shape: {sequences_test[0]['features'].shape}")
-    #     print(f"  Example label: {labels_test[0]} ({GESTURE_MAP[labels_test[0]]})")

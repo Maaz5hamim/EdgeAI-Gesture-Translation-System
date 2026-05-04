@@ -1,28 +1,19 @@
 import numpy as np
 from scipy.interpolate import interp1d
-
 from sklearn.preprocessing import StandardScaler
-
 import warnings
 warnings.filterwarnings('ignore')
 
-
 class Preprocess:    
-    def __init__(self, target_length=100, target_sample_rate=None, 
-                 normalize=True, augment=True, augmentation_factor=3):
+    def __init__(self, target_length=100, normalize=True, augment=True, augmentation_factor=3):
         self.target_length = target_length
-        self.target_sample_rate = target_sample_rate
         self.normalize = normalize
         self.augment = augment
         self.augmentation_factor = augmentation_factor
         
         self.scaler = StandardScaler()
         self.is_fitted = False
-        self.actual_sample_rate = None
-        
-        # Feature indices (assuming timestamp + 6 sensors)
-        self.timestamp_idx = 0
-        self.sensor_start_idx = 1
+        self.sensor_start_idx = 0
         self.n_sensors = 6
     
     def determine_sample_rate(self, features):
@@ -175,21 +166,10 @@ class Preprocess:
         Args:
             features: Array of sequences
         """
-        # Determine sampling rate
-        self.determine_sample_rate(features)
-        
-        # Resample all sequences
-        print(f"\nResampling {len(features)} sequences to {self.target_length} samples...")
-        resampled_sequences = []
-        
-        for seq in features:
-            resampled = self.resample_sequence(seq)
-            resampled_sequences.append(resampled)
-        
         # Fit scaler
         if self.normalize:
             print("Fitting scaler...")
-            all_data = np.vstack(resampled_sequences)
+            all_data = np.vstack(features)
             self.scaler.fit(all_data)
             
             print(f"Feature means: {self.scaler.mean_}")
@@ -199,7 +179,7 @@ class Preprocess:
     
     def transform(self, features, labels):
         """
-        Transform sequences with resampling, normalization, and optional augmentation
+        Transform sequences with normalization, and optional augmentation
         
         Args:
             features: Array of sequences
@@ -220,32 +200,30 @@ class Preprocess:
         # Resample and normalize
         print(f"\nProcessing {len(features)} sequences...")
         for seq, label in zip(features, labels):
-            # Resample
-            resampled = self.resample_sequence(seq)
             
             # Normalize
             if self.normalize:
-                resampled = self.scaler.transform(resampled)
+                seq = self.scaler.transform(seq)
             
             # Augment
             if self.augment:
-                augmented = self.augment_sequence(resampled)
+                augmented = self.augment_sequence(seq)
                 for aug_seq in augmented[:self.augmentation_factor]:
                     processed_sequences.append(aug_seq)
                     processed_labels.append(label)
             else:
-                processed_sequences.append(resampled)
+                processed_sequences.append(seq)
                 processed_labels.append(label)
         
         # Convert to arrays
         X = np.array(processed_sequences, dtype=np.float32)
         y_original = np.array(processed_labels, dtype=np.int32)
         
-        # One-hot encode labels (assuming labels are 1, 2, 3, 4)
+        # One-hot encode labels
         n_classes = len(np.unique(labels))
         y = np.zeros((len(y_original), n_classes), dtype=np.float32)
         for i, label in enumerate(y_original):
-            y[i, label - 1] = 1  # Convert 1-4 to 0-3
+            y[i, label - 1] = 1
         
         print(f"  Shape: {X.shape}")
         print(f"  Labels shape: {y.shape}")

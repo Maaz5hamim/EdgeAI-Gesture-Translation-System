@@ -1,0 +1,13 @@
+# Target labels
+ gesture_app_rf
+# Source files and their labels
+/Users/maazshamim/gesture_app_rf/build/_sysbuild/sysbuild/images/CMakeFiles/gesture_app_rf
+/Users/maazshamim/gesture_app_rf/build/_sysbuild/sysbuild/images/CMakeFiles/gesture_app_rf.rule
+/Users/maazshamim/gesture_app_rf/build/_sysbuild/sysbuild/images/CMakeFiles/gesture_app_rf-complete.rule
+/Users/maazshamim/gesture_app_rf/build/_sysbuild/sysbuild/images/gesture_app_rf-prefix/src/gesture_app_rf-stamp/gesture_app_rf-build.rule
+/Users/maazshamim/gesture_app_rf/build/_sysbuild/sysbuild/images/gesture_app_rf-prefix/src/gesture_app_rf-stamp/gesture_app_rf-configure.rule
+/Users/maazshamim/gesture_app_rf/build/_sysbuild/sysbuild/images/gesture_app_rf-prefix/src/gesture_app_rf-stamp/gesture_app_rf-download.rule
+/Users/maazshamim/gesture_app_rf/build/_sysbuild/sysbuild/images/gesture_app_rf-prefix/src/gesture_app_rf-stamp/gesture_app_rf-install.rule
+/Users/maazshamim/gesture_app_rf/build/_sysbuild/sysbuild/images/gesture_app_rf-prefix/src/gesture_app_rf-stamp/gesture_app_rf-mkdir.rule
+/Users/maazshamim/gesture_app_rf/build/_sysbuild/sysbuild/images/gesture_app_rf-prefix/src/gesture_app_rf-stamp/gesture_app_rf-patch.rule
+/Users/maazshamim/gesture_app_rf/build/_sysbuild/sysbuild/images/gesture_app_rf-prefix/src/gesture_app_rf-stamp/gesture_app_rf-update.rule
