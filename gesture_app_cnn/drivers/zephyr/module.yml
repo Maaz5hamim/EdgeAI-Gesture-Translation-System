@@ -1,4 +1,0 @@
-name: lsm6ds3
-build:
-  cmake: .
-  kconfig: Kconfig
