@@ -95,3 +95,25 @@ Current: ~46 KB RAM / 188 KB available
 ---
 
 Serial: `screen /dev/ttyACM0 115200` | Device name: change in `prj.conf` → `CONFIG_BT_DEVICE_NAME`
+
+# BLE Gesture Tuning
+
+All tuning values are at the top of `ble_keyboard.c`.
+
+```c
+#define DEFAULT_KEY_HOLD_MS           50
+#define DEFAULT_KEY_GAP_MS            25
+#define DEFAULT_KEY_REPEAT_COUNT      10
+#define DEFAULT_DEBOUNCE_MS          200
+```
+
+---
+
+## What each value does
+
+| Value | What it controls |
+|---|---|
+| `KEY_REPEAT_COUNT` | How many keypresses are sent per gesture — more = moves further |
+| `KEY_HOLD_MS` | How long each keypress is held — lower = faster |
+| `KEY_GAP_MS` | Pause between keypresses — lower = smoother |
+| `DEBOUNCE_MS` | Minimum time before next gesture is accepted |
