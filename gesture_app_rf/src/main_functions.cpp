@@ -50,6 +50,8 @@ bool setup()
 		return false;
 	}
 
+    SetupOutput();
+
 	return true;
 }
 
@@ -63,7 +65,9 @@ void loop(void)
 
     int gesture_index = run_inference();
 
-    HandleOutput(gesture_index);
+    if (gesture_index != 7){
+        HandleOutput(gesture_index);
+    }
 
 	k_msleep(500); 
 	while (k_sem_take(&gesture_trigger_sem, K_NO_WAIT) == 0);

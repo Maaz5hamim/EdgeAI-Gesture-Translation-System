@@ -51,10 +51,10 @@ void HandleOutput(int kind) {
     gesture_type_t ble_gesture = GESTURE_NONE;
     
     switch(kind) {
-        case kSlideUp:    ble_gesture = GESTURE_SWIPE_UP; break;
-        case kSlideDown:  ble_gesture = GESTURE_SWIPE_DOWN; break;
-        case kSlideLeft:  ble_gesture = GESTURE_SWIPE_LEFT; break;
-        case kSlideRight: ble_gesture = GESTURE_SWIPE_RIGHT; break;
+        case kSlideDown:    ble_gesture = GESTURE_SWIPE_UP; break;
+        case kSlideUp:  ble_gesture = GESTURE_SWIPE_DOWN; break;
+        case kSlideRight:  ble_gesture = GESTURE_SWIPE_LEFT; break;
+        case kSlideLeft: ble_gesture = GESTURE_SWIPE_RIGHT; break;
         default: return; // Unknown gesture
     }
 
