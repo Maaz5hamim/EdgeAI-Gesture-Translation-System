@@ -9,11 +9,11 @@ gesture_app_cnn/modules/
 gesture_app_cnn/optional/
 gesture_app_cnn/tools/
 gesture_app_cnn/zephyr/
-gesture_app_cnn/drivers/
+# gesture_app_cnn/drivers/
 
 gesture_app_rf/build/
 gesture_app_rf/modules/
 gesture_app_rf/optional/
 gesture_app_rf/tools/
 gesture_app_rf/zephyr/
-gesture_app_rf/drivers/
+# gesture_app_rf/drivers/
