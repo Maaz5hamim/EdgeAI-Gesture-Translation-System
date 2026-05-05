@@ -1,155 +1,212 @@
-# EdgeAI-Gesture-Translation-System
-**An end-to-end Edge AI gesture recognition system built on the Nordic nRF54L15 SoC.**  
-This project classifies finger-based gestures using a 6-axis IMU and translates them into real-time control commands for mobile devices over Bluetooth Low Energy (BLE).
+# LSM6DS3 Gesture Recognition System with Nordic nRF54L15-DK
+
+## Table of Contents
+- [Introduction](#introduction)
+- [Hardware Details](#hardware-details)
+- [Software Environment](#software-environment)
+- [Reproducibility Guide](#reproducibility-guide)
+- [Troubleshooting](#troubleshooting)
 
 ---
 
-## Overview
+## Introduction
 
-The **Gesture Ring** is a low-latency, on-device machine learning system that enables intuitive finger-motion control.  
-Using a lightweight TinyML model running entirely on the nRF54L15, the system converts IMU-based motion signatures into actionable mobile commands (e.g., media control, UI navigation).
+### Problem Statement
+Traditional human-computer interaction relies heavily on physical input devices (keyboards, mice, touchscreens). This project addresses the need for intuitive, contactless gesture-based control systems suitable for applications in:
+- VR/AR environments
+- Accessibility tools for users with limited mobility
+- Industrial/medical settings requiring hands-free operation
+- Smart home/IoT device control
 
----
+### Target Application
+A wearable gesture recognition glove that translates hand movements into wireless commands for mobile devices, laptops, and IoT systems via Bluetooth Low Energy (BLE).
 
-## 1. System Architecture
-
-The system consists of **three fully integrated pipelines**, optimized for real-time inference on a resource-constrained device.
-
-### I. Data Acquisition (IMU → nRF54L15)
-
-- 6-axis IMU: **LSM6DS3 breakout module**
-- Data: accelerometer + gyroscope
-- Sampling rate: **104 Hz** (closest standard ODR to 100 Hz target)
-- Interface: **I2C, 400 kHz fast mode**
-- Raw IMU streams are fed directly to the preprocessing/inference engine on the SoC
-
----
-
-### II. Edge Inference (TinyML Classification)
-
-The nRF54L15's **Arm Cortex-M33** runs a quantized TinyML model (CNN/GRU).
-
-#### Sliding Window Mechanism
-
-To model temporal motion patterns:
-
+### High-Level Architecture
 ```
-W_i = { x_t | t ∈ [i·s, i·s + L] }
+┌─────────────────────────────────────────────────┐
+│  LSM6DS3 IMU Sensor (Finger-mounted)            │
+│  ├─ Accelerometer (±2g to ±16g)                │
+│  └─ Gyroscope (±125 to ±2000 dps)              │
+└────────────────┬────────────────────────────────┘
+                 │ I2C/SPI
+                 ▼
+┌─────────────────────────────────────────────────┐
+│  Nordic nRF54L15-DK (Processing Unit)          │
+│  ├─ Background Thread: Circular Buffer (100)   │
+│  ├─ IMU Interrupt: Jolt Detection              │
+│  ├─ ML Inference Engine                        │
+│  │  ├─ Random Forest (gesture_app_rf)          │
+│  │  └─ CNN TFLite (gesture_app_cnn)            │
+│  └─ BLE Stack (Bluetooth 5.4)                  │
+└────────────────┬────────────────────────────────┘
+                 │ BLE GATT
+                 ▼
+┌─────────────────────────────────────────────────┐
+│  Client Device (Mobile/Laptop)                  │
+│  └─ Gesture Command Interpreter                │
+└─────────────────────────────────────────────────┘
 ```
 
-- **L** — Window length (50 samples)
-- **s** — Stride
+### Key Features
+- **8 Gesture Classes**: Slide Up, Slide Down, Slide Right, Slide Left, Tap, Double Tap, Static, None
+- **Dual ML Models**: 
+  - Random Forest (currently superior performance)
+  - CNN (TensorFlow Lite optimized)
+- **Interrupt-Driven Inference**: IMU hardware interrupt triggers on significant motion jolt
+- **Smart Windowing**: 100-sample window (50 pre-jolt, 50 post-jolt) captures complete gesture signature
+- **Low Latency**: <50ms inference time (Random Forest)
+- **Wireless Range**: 10-15m typical BLE range
+- **Energy Efficient**: Interrupt-driven architecture minimizes active processing time
 
-Each window: 50 samples × 6 channels × 2 bytes = **600 bytes** (fits in 256 KB RAM).
-
-Inference is executed fully on-device with INT8 operations to achieve sub-millisecond latency.
-
----
-
-### III. Translation & Communication (Mobile Bridge)
-
-After classification:
-
-- Gestures → **HID events** or custom **GATT characteristics**
-- Communication: **BLE 6.0**
-- Mobile device (iOS/Android) receives updates via BLE notifications
-
-Example mapping:  
-`Left Flick → Previous Song`
+### Performance Summary
+| Metric | Value |
+|--------|-------|
+| **Inference Latency** | 30-50ms (RF), 60-80ms (CNN) |
+| **Gesture Accuracy** | 91-94% (RF), 80-83% (CNN) |
+| **Sampling Rate** | 100Hz (IMU) |
 
 ---
 
-## 2. Development Stages
+## Hardware Details
 
-### Stage 1: Sensor Bring-Up ✓
+### i. Board and MCU
+*   **Core**: Nordic Semiconductor **nRF54L15** (ARM Cortex-M33).
+*   **Development Kit**: nRF54L15DK.
 
-- LSM6DS3 over I2C on the nRF54L15 DK using out-of-tree driver
-- Accel + gyro confirmed on serial console at 104 Hz
-- Interrupt-driven sampling via INT1 data-ready trigger on P1.13
-
-### Stage 2: Sampling Pipeline ✓
-
-- Interrupt trigger → `k_work` → `k_msgq` ring buffer at ~103 Hz confirmed
-- 6-channel `int16` samples (accel in mg, gyro in mdps)
-
-### Stage 3: Sliding Window & Model Training
-
-- Sliding window extraction (50-sample, 6-channel, 25-sample stride)
-- Zero-mean normalization and unit-variance scaling
-- CNN/GRU model training on gesture dataset
-
-### Stage 3: Model Training & Deployment
-
-- **Hybrid dataset**: public IMU datasets + custom finger-gesture recordings
-- **Model architecture**: compact CNN/GRU (optimized for 256 KB RAM)
-- **Quantization**: INT8 using TFLite Micro or Edge Impulse
-- Export model to C++ inference library and flash via nRF Connect SDK
-
-### Stage 4: Mobile Translation Layer
-
-- Mapping engine converts inference outputs → BLE commands
-- BLE GATT service with configurable characteristics for gesture streaming
-- Low-latency notifications to iOS/Android
+### ii. Additional Peripherals
+*   **IMU**: STMicroelectronics **LSM6DS3** (6-axis Accelerometer and Gyroscope).
+*   **Interface**: I2C protocol for sensor data acquisition.
 
 ---
 
-## 3. Hardware
+## Physical Assembly
 
-| Component | Details |
-|-----------|---------|
-| **SoC** | Nordic nRF54L15 Dev Kit |
-| **Sensor** | LSM6DS3 breakout module (6-axis IMU) |
-| **Power** | USB (dev) / Li-Po (ring form factor) |
-| **Mobile** | BLE-capable iOS or Android |
-| **Dev Tools** | macOS Apple Silicon M4, VS Code, nRF Connect extension |
+### i.Glove Integration:
 
-### Wiring (nRF54L15 DK PORT 1 header)
+![Glove Assembly - Front View](Mounting_Setup.jpeg)
+*Figure 1: LSM6DS3 mounted on index finger and connected to nrf54l15dk attached to a glove*
 
-| Breakout Pin | DK Pin | Notes |
-|---|---|---|
-| VIN | VDD.IO | 3.3V power |
-| GND | GND | Ground |
-| SDA | P1.11 | I2C data |
-| SCL | P1.12 | I2C clock |
-| CS | VDD.IO (tie high) | Selects I2C mode over SPI |
-| SAO | GND (tie low) | Sets I2C address to 0x6A |
-| INT1 | P1.13 | Data-ready interrupt (trigger mode) |
+![Glove Assembly - Side View](IMU_Orientation.jpeg)
+*Figure 2: Side view showing sensor orientation*
+
+### ii.IMU Orientation:
+```
+Glove Coordinate System (when worn on right hand, palm down):
+
+┌─────────────────────────────────────┐
+│                                     │
+│         -Z (Toward Finger Tip)      │
+│              ▲                      │
+│              │                      │
+│              │                      │
+│    +Y        │        +X            │
+│   (Up)       └────────►             │
+│   ⊙          (Toward Middle Finger) │
+│                                     │
+│   LSM6DS3 Sensor                    │
+│  (Top view)                         |
+│                                     │
+└─────────────────────────────────────┘
+```
+---
+
+## Software Environment
+
+### i. Firmware
+*   **Toolchain**: nRF Connect SDK (NCS) **v3.2.1**.
+*   **RTOS**: Zephyr RTOS.
+*   **Build System**: West / CMake.
+
+### ii. Machine Learning Module
+The repository contains two distinct inference approaches for gesture classification:
+*   **Random Forest (`gesture_app_rf`)**: The recommended implementation due to superior stability and lower resource overhead on the nRF54.
+*   **CNN (`gesture_app_cnn`)**: An alternative deep learning approach for experimental comparison.
+*   **Training**: Developed using Python 3.11, Scikit-learn, and NumPy.
+
+### iii. Radio Stack
+*   **Protocol**: Bluetooth Low Energy (BLE) 5.4.
+*   **Profile**: HID Over GATT (HOGP).
+*   **Appearance**: Keyboard (961).
 
 ---
 
-## 4. Design Decisions
+## Reproducibility Guide
 
-**LSM6DS3 breakout module (not bare chip)**  
-The LSM6DS3TR-C is chip-only and requires PCB-level soldering. A breakout module is used for prototyping. Zephyr has no upstream LSM6DS3 driver; an out-of-tree driver is included in `drivers/lsm6ds3/`, patched from `lsm6dsl` with WHO_AM_I changed from 0x6A to 0x69.
+### i. Prerequisites & Environment Setup
+1.  **Clone the Repository**:
+    ```bash
+    git clone <your-repo-url>
+    cd <repo-name>
+    
+2. **VS Code Extension**: Install the nRF Connect for VS Code Extension Pack.
+3. **SDK Version**: Ensure you are using nRF Connect SDK (NCS) v3.2.1.
+4. **Toolchain**: Verify that the toolchain is correctly linked within the VS Code extension settings to match the SDK version.
 
-**I2C over SPI**  
-I2C requires only 2 signal wires. At 400 kHz with 6 channels × 2 bytes × 104 Hz, bus utilization is under 1% — SPI's higher bandwidth is unnecessary for this data rate.
+### ii. Hardware Assembly
+1. Connect the LSM6DS3 IMU to the nRF54L15DK according to the following pin map:
+   
+  | Breakout Pin | DK Pin | Notes |
+  |-------------|--------|-------|
+  | VIN | VDD.IO | 3.3V power |
+  | GND | GND | Ground |
+  | SDA | P1.11 | I2C data |
+  | SCL | P1.12 | I2C clock |
+  | CS | VDD.IO (tie high) | Selects I2C mode over SPI |
+  | SAO | GND (tie low) | Sets I2C address to 0x6A |
+  | INT1 | P1.13 | Data-ready interrupt (trigger) |
+  
+2. Ensure that the orientation of IMU is same as previously shown
 
-**P1.11 / P1.12 for SDA/SCL**  
-P2 is occupied by onboard SPI flash. P1.02 and P1.03 are NFC pins not routed to GPIO by default. P1.11 and P1.12 are free GPIO pins confirmed working, routed to `i2c21`.
+### iii. Build and Flash Instructions
 
-**I2C address 0x6A (SAO tied low)**  
-The SAO pin selects between 0x6A (low) and 0x6B (high). Tying low gives the default address and requires no pull-up on SAO.
+You can build either the Random Forest or the CNN version of the application
 
-**ODR 104 Hz**  
-The LSM6DS3 does not have an exact 100 Hz output data rate. 104 Hz is the closest standard rate the chip supports.
+#### Option A: Random Forest (gesture_app_rf) - Recommended
 
-**Interrupt-driven trigger mode**  
-INT1 pulses when a new sample is ready (~104 Hz), waking the MCU via GPIO interrupt rather than polling a timer. More precise sample timing, lower CPU overhead. Controlled by `CONFIG_LSM6DS3_TRIGGER_GLOBAL_THREAD=y`.
+This version is more stable and resource-efficient for the nRF54L15.
+  ```bash
+  cd gesture_app_rf
+  rm -rf build/
+  west build -b nrf54l15dk/nrf54l15/cpuapp
+  west flash
+  ```
 
-**50-sample window**  
-50 samples × 6 channels × 2 bytes = 600 bytes per window — well within the nRF54L15's 256 KB RAM.
+#### Option B: CNN (gesture_app_cnn)
+
+**Note**: To build the CNN app, the tflite-micro library must be manually added to your Zephyr allowlist.
+
+1. Update your west.yaml file to include tflite-micro to the zephyr allowlist
+
+2. Run the following command to sync the library:
+   ```bash
+   west update -f always
+
+4. Build and Flash:
+    ```bash
+    cd gesture_app_cnn
+    rm -rf build/
+    west build -b nrf54l15dk/nrf54l15/cpuapp
+    west flash
+    ```
+
+### iv. Running the Demo
+
+* **Pairing**: Once flashed, the device will advertise as "GestureRing".
+* **Connection**: Open the Bluetooth settings on your phone or laptop and connect to the device.
+* **Gestures**: After connecting, perform gestures to control your device.
+
+**Note**: Gestures are optimized for navigation in Safari and Chrome and may not work on some applications.
+
+
+## Troubleshooting
+
+**Device Not Visible**: If "GestureRing" does not appear in your Bluetooth list:
+
+* Press the RESET button on the nRF54L15DK.
+* Toggle Bluetooth OFF and ON on your laptop or phone to refresh the cache.
+
+**Missing TFLite Libraries**: If the CNN build fails with missing library errors, double-check that your *west.yaml* was modified correctly and that you ran **west update -f always**.
+
+**I2C Errors**: Ensure the jumpers are securely connected to the correct pins.
 
 ---
-
-## 5. Build & Flash
-
-Open this folder in VS Code with the nRF Connect extension. Add a build configuration with the following settings:
-
-| Field | Value |
-|-------|-------|
-| **Board target** | `nrf54l15dk/nrf54l15/cpuapp` |
-| **Base config** | `prj.conf` |
-| **Base overlay** | `boards/nrf54l15dk_nrf54l15_cpuapp.overlay` |
-
-The overlay is picked up automatically by the build system. Flash using the **Flash** button in the nRF Connect panel. Console output appears on the USB serial port at 115200 baud.
