@@ -19,9 +19,6 @@
 #include <zephyr/settings/settings.h>
 #include <bluetooth/services/hids.h>
 
-/* Include your TinyML/gesture header here */
-// #include "gesture_classifier.h"
-
 /*===========================================================================*/
 /* GESTURE CLASSIFICATION DEFINITIONS                                        */
 /*===========================================================================*/
@@ -44,6 +41,8 @@ typedef struct {
     uint32_t key_hold_ms;        /**< How long to hold key down */
     uint32_t key_gap_ms;         /**< Gap between key repeats */
     uint32_t key_repeat_count;   /**< Number of key press cycles per gesture */
+    uint32_t key_repeat_count_vert;   /**< Number of key press cycles for vertical gestures */
+    uint32_t key_repeat_count_horiz;  /**< Number of key press cycles for horizontal gestures */
 } gesture_config_t;
 
 /*===========================================================================*/
@@ -62,6 +61,8 @@ typedef struct {
 #define DEFAULT_KEY_HOLD_MS           50
 #define DEFAULT_KEY_GAP_MS            25
 #define DEFAULT_KEY_REPEAT_COUNT       10
+#define DEFAULT_KEY_REPEAT_COUNT_VERT  7
+#define DEFAULT_KEY_REPEAT_COUNT_HORIZ  1
 
 /* Thread configuration */
 #define GESTURE_THREAD_STACK_SIZE   2048
@@ -106,7 +107,8 @@ static gesture_config_t gesture_config = {
     .debounce_ms = DEFAULT_DEBOUNCE_MS,
     .key_hold_ms = DEFAULT_KEY_HOLD_MS,
     .key_gap_ms = DEFAULT_KEY_GAP_MS,
-    .key_repeat_count = DEFAULT_KEY_REPEAT_COUNT,
+    .key_repeat_count_vert = DEFAULT_KEY_REPEAT_COUNT_VERT,
+    .key_repeat_count_horiz = DEFAULT_KEY_REPEAT_COUNT_HORIZ,
 };
 
 static int64_t last_gesture_time = 0;
@@ -138,9 +140,9 @@ static uint8_t gesture_to_keycode(gesture_type_t gesture)
 {
     switch (gesture) {
     case GESTURE_SWIPE_UP:
-        return KEY_UP_ARROW;
-    case GESTURE_SWIPE_DOWN:
         return KEY_DOWN_ARROW;
+    case GESTURE_SWIPE_DOWN:
+        return KEY_UP_ARROW;
     case GESTURE_SWIPE_LEFT:
         return KEY_LEFT_ARROW;
     case GESTURE_SWIPE_RIGHT:
@@ -428,9 +430,7 @@ static inline int send_report_fast(const uint8_t *data)
 
 static void key_sender_thread(void *a, void *b, void *c)
 {
-    ARG_UNUSED(a);
-    ARG_UNUSED(b);
-    ARG_UNUSED(c);
+    ARG_UNUSED(a); ARG_UNUSED(b); ARG_UNUSED(c);
 
     while (1) {
         k_sem_take(&key_sem, K_FOREVER);
@@ -441,13 +441,19 @@ static void key_sender_thread(void *a, void *b, void *c)
             continue;
         }
 
+        /* Pick repeat count based on axis */
+        bool is_horizontal = (keycode == KEY_LEFT_ARROW || keycode == KEY_RIGHT_ARROW);
+        uint32_t repeat_count = is_horizontal
+            ? gesture_config.key_repeat_count_horiz
+            : gesture_config.key_repeat_count_vert;
+
         memset(press_report, 0, sizeof(press_report));
         press_report[2] = keycode;
 
         int64_t start = k_uptime_get();
         uint32_t sent = 0;
 
-        for (uint32_t i = 0; i < gesture_config.key_repeat_count && hid_ready; i++) {
+        for (uint32_t i = 0; i < repeat_count && hid_ready; i++) {
             /* Wait for queue space */
             int timeout = 50;
             while (atomic_get(&pending_sends) >= MAX_PENDING_SENDS && timeout-- > 0) {
