@@ -81,15 +81,15 @@ A wearable gesture recognition glove that translates hand movements into wireles
 
 ## Physical Assembly
 
-### i.Glove Integration:
+### i. Glove Integration:
 
-![Glove Assembly - Front View](Mounting_Setup.jpeg)
+![Glove Assembly - Front View](images/Mounting_Setup.jpeg)
 *Figure 1: LSM6DS3 mounted on index finger and connected to nrf54l15dk attached to a glove*
 
-![Glove Assembly - Side View](IMU_Orientation.jpeg)
+![Glove Assembly - Side View](images/IMU_Orientation.jpeg
 *Figure 2: Side view showing sensor orientation*
 
-### ii.IMU Orientation:
+### ii. IMU Orientation:
 ```
 Glove Coordinate System (when worn on right hand, palm down):
 
@@ -204,6 +204,16 @@ This version is more stable and resource-efficient for the nRF54L15.
 
 * Press the RESET button on the nRF54L15DK.
 * Toggle Bluetooth OFF and ON on your laptop or phone to refresh the cache.
+
+**Pairing Fails**:
+* Forget the "GestureRing" device phone 
+* Erase nrf54l15dk 
+* Flash nrf54l15dk
+
+**Gestures No Longer Working**: 
+* Forget the "GestureRing" device phone 
+* Reset nrf54l15dk 
+* Pair to "GestureRing" again
 
 **Missing TFLite Libraries**: If the CNN build fails with missing library errors, double-check that your *west.yaml* was modified correctly and that you ran **west update -f always**.
 

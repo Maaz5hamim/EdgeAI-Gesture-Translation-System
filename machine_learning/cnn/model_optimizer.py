@@ -323,6 +323,6 @@ if __name__ == "__main__":
             'inference_time_ms': benchmark_results['mean_inference_time_ms'],
             'path': model_path
         })
-        converter.convert_to_c_array(model_path, os.path.join('models_c_headers', f'model_{conversions[i]}.h'), 'gesture_model')
+        converter.convert_to_c_array(model_path, os.path.join('models_c_headers', f'model_{conversions[i]}.h'), 'gesture_model_data')
     
     converter.generate_comparison_report(models_info)

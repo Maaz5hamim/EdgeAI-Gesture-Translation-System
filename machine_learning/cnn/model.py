@@ -70,6 +70,15 @@ class DeepConvLSTM:
 
         model.add(layers.Conv1D(filters=32, kernel_size=3, padding='same', dilation_rate=4, activation='relu'))
         model.add(layers.BatchNormalization())
+
+        model.add(layers.GlobalMaxPooling1D(name='max_pool'))
+
+        # Output layer
+        model.add(layers.Dense(
+            units=self.n_classes,
+            activation='softmax',
+            name='output'
+        ))
         
         # # LSTM layers
         # model.add(layers.LSTM(
@@ -88,15 +97,6 @@ class DeepConvLSTM:
         #     name='lstm_2'
         # ))
         # model.add(layers.Dropout(self.dropout_rate, name='dropout_2'))
-
-        model.add(layers.GlobalMaxPooling1D(name='max_pool'))
-
-        # Output layer
-        model.add(layers.Dense(
-            units=self.n_classes,
-            activation='softmax',
-            name='output'
-        ))
         
         self.model = model
         
