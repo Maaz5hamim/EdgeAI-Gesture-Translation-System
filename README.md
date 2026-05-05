@@ -25,25 +25,25 @@ A wearable gesture recognition glove that translates hand movements into wireles
 ```
 ┌─────────────────────────────────────────────────┐
 │  LSM6DS3 IMU Sensor (Finger-mounted)            │
-│  ├─ Accelerometer (±2g to ±16g)                │
-│  └─ Gyroscope (±125 to ±2000 dps)              │
+│  ├─ Accelerometer (±2g to ±16g)                 │
+│  └─ Gyroscope (±125 to ±2000 dps)               │
 └────────────────┬────────────────────────────────┘
                  │ I2C/SPI
                  ▼
 ┌─────────────────────────────────────────────────┐
-│  Nordic nRF54L15-DK (Processing Unit)          │
-│  ├─ Background Thread: Circular Buffer (100)   │
-│  ├─ IMU Interrupt: Jolt Detection              │
-│  ├─ ML Inference Engine                        │
-│  │  ├─ Random Forest (gesture_app_rf)          │
-│  │  └─ CNN TFLite (gesture_app_cnn)            │
-│  └─ BLE Stack (Bluetooth 5.4)                  │
-└────────────────┬────────────────────────────────┘
+│  Nordic nRF54L15-DK (Processing Unit)           │
+│  ├─ Background Thread: Circular Buffer (100)    │
+│  ├─ IMU Interrupt: Jolt Detection               │
+│  ├─ ML Inference Engine                         │
+│  │  ├─ Random Forest (gesture_app_rf)           │
+│  │  └─ CNN TFLite (gesture_app_cnn)             │
+│  └─ BLE Stack (Bluetooth 5.4)                   │
+└────────────────┬─────────────────────────────── ┘
                  │ BLE GATT
                  ▼
 ┌─────────────────────────────────────────────────┐
 │  Client Device (Mobile/Laptop)                  │
-│  └─ Gesture Command Interpreter                │
+│  └─ Gesture Command Interpreter                 │
 └─────────────────────────────────────────────────┘
 ```
 
@@ -86,7 +86,7 @@ A wearable gesture recognition glove that translates hand movements into wireles
 ![Glove Assembly - Front View](images/Mounting_Setup.jpeg)
 *Figure 1: LSM6DS3 mounted on index finger and connected to nrf54l15dk attached to a glove*
 
-![Glove Assembly - Side View](images/IMU_Orientation.jpeg
+![Glove Assembly - Side View](images/IMU_Orientation.jpeg)
 *Figure 2: Side view showing sensor orientation*
 
 ### ii. IMU Orientation:
