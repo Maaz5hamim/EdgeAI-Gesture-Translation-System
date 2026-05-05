@@ -26,6 +26,12 @@ Whether you're building accessible interfaces for mobility-impaired users, hands
   Your browser does not support the video tag.
 </video>
 
+![Setup](images/Mounting_Setup.jpeg)
+
+*Real-time gesture recognition in action*
+
+**[📹 Watch Full Video](https://www.youtube.com/watch?v=0bSiu9pfk04)**
+
 
 
 ## Use Cases
