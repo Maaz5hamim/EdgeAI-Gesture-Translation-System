@@ -22,7 +22,7 @@ Whether you're building accessible interfaces for mobility-impaired users, hands
 
 ## 🎥 See It In Action
 
-<video src="https://drive.google.com/file/d/1jWN0b7F63R-6DosHGZlOcja9Rd35ji0S/view?ts=69f9676e" controls>
+<video src="https://youtu.be/0bSiu9pfk04" controls>
   Your browser does not support the video tag.
 </video>
 
