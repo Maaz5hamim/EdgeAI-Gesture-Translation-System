@@ -32,6 +32,9 @@ Whether you're building accessible interfaces for mobility-impaired users, hands
 
 **[📹 Watch Full Video](https://www.youtube.com/watch?v=0bSiu9pfk04)**
 
+## Presentation Slides
+- https://www.anygen.io/share/5AGZOSa7BZ7JdnF8b7aTyJ?share_id=7636493533708291808
+
 
 
 ## Use Cases
