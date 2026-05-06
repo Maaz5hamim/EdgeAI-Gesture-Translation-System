@@ -223,19 +223,9 @@ This version is more stable and resource-efficient for the nRF54L15.
 
 **Note**: Gestures are optimized for navigation in Safari and Chrome and may not work on some applications.
 
-**Expected log output** (via `west build` serial monitor or nRF Connect app):
-```
-*** Booting nRF Connect SDK v3.2.1 ***
-[00:00:00.123] BLE HID initialized
-[00:00:00.456] IMU initialized at 100Hz
-[00:00:00.789] Advertising as "GestureRing"...
-[00:00:05.001] BLE connected
-[00:00:08.345] Jolt detected — capturing window
-[00:00:08.395] Inference result: SLIDE_UP (confidence: 0.94)
-[00:00:08.400] BLE HID keycode sent: PAGE_UP
-```
-
 ### v. Testing and Measurement
+
+For full details on data collection, preprocessing, and model evaluation see [machine_learning/machine_learning.md](machine_learning/machine_learning.md).
 
 **Reproducing accuracy metrics:**
 1. Collect test data using `machine_learning/data_collector.py` with the device connected over serial.
@@ -244,18 +234,14 @@ This version is more stable and resource-efficient for the nRF54L15.
 4. The reported 91–94% RF accuracy is measured on a held-out 20% split of 900 labeled gesture samples (720 train / 180 test).
 
 **Reproducing latency measurements:**
-- Inference time is printed to serial on each gesture event (see expected log above).
-- Measure end-to-end latency (jolt detection → keycode received on host) using a stopwatch or BLE sniffer.
+- TODO: document serial log format and expected timing output once firmware is finalized.
 
 **Power measurement:**
 - Use a Nordic PPK2 (Power Profiler Kit II) connected to the DK's power measurement pins to observe current draw during idle and inference bursts.
 
 ### vi. Offline Mode
 
-The system operates fully offline — all inference runs on-device with no cloud dependency. If Bluetooth connectivity to the host is unavailable:
-- The device will continue advertising as "GestureRing" and retry connection automatically.
-- Inference still runs locally; keycode output is simply not delivered until a host connects.
-- No internet connection is required at any point.
+TODO: document offline behavior and BLE reconnection flow once firmware is finalized.
 
 ## Troubleshooting
 
