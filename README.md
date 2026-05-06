@@ -75,7 +75,7 @@ A wearable gesture recognition glove that translates hand movements into wireles
 *   **Development Kit**: nRF54L15DK.
 
 ### ii. Additional Peripherals
-*   **IMU**: STMicroelectronics **LSM6DS3** (6-axis Accelerometer and Gyroscope) — [Datasheet](https://www.st.com/resource/en/datasheet/lsm6ds3.pdf).
+*   **IMU**: STMicroelectronics **LSM6DS3** (6-axis Accelerometer and Gyroscope) — [Purchase](https://www.amazon.com/LSM6DS3-Accelerometer-Gyroscope-Temperature-Interface/dp/B0FKT9ZR2X/) | [Datasheet](https://www.st.com/resource/en/datasheet/lsm6ds3.pdf).
 *   **Interface**: I2C protocol for sensor data acquisition.
 
 ### iii. Power Subsystem
@@ -131,8 +131,9 @@ Glove Coordinate System (when worn on right hand, palm down):
 
 ### i. Firmware
 *   **Toolchain**: nRF Connect SDK (NCS) **v3.2.1**.
-*   **RTOS**: Zephyr RTOS.
+*   **RTOS**: Zephyr RTOS (bundled with NCS v3.2.1).
 *   **Build System**: West / CMake.
+*   **Compiler**: arm-zephyr-eabi-gcc 12.2.0 (Zephyr SDK 0.17.0).
 
 ### ii. Machine Learning Module
 The repository contains two distinct inference approaches for gesture classification:
