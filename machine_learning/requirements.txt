@@ -1,7 +1,7 @@
 numpy
 pandas
 seaborn
-scikit-learn
+sklearn
 matplotlib
 tensorflow
 m2cgen
