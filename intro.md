@@ -7,7 +7,7 @@
 
 Imagine controlling your phone, computer, or smart TV with simple hand gestures—no buttons, no touchscreen, just natural motion. The **EdgeAI Gesture Translation System** brings this vision to life using cutting-edge TinyML technology running entirely on a coin-sized Nordic nRF54L15 microcontroller.
 
-This project combines a 6-axis IMU sensor with on-device machine learning to recognize four directional gestures in real-time, translating them into Bluetooth keyboard commands. The system achieves **93% accuracy** while consuming only **360µA average power**—enabling weeks of battery life on a single CR2032 coin cell.
+This project combines a 6-axis IMU sensor with on-device machine learning to recognize eight gesture classes in real-time, translating them into Bluetooth keyboard commands. The system achieves **93% accuracy** while consuming only **360µA average power**—enabling weeks of battery life on a single CR2032 coin cell.
 
 **What makes this special?**
 - **Fully embedded intelligence:** No cloud, no smartphone processing—inference runs directly on the 256KB RAM nRF54L15
@@ -31,6 +31,9 @@ Whether you're building accessible interfaces for mobility-impaired users, hands
 *Real-time gesture recognition in action*
 
 **[📹 Watch Full Video](https://www.youtube.com/watch?v=0bSiu9pfk04)**
+
+## Presentation Slides
+- https://www.anygen.io/share/5AGZOSa7BZ7JdnF8b7aTyJ?share_id=7636493533708291808
 
 
 
