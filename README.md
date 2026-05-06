@@ -225,23 +225,23 @@ This version is more stable and resource-efficient for the nRF54L15.
 
 ### v. Testing and Measurement
 
-For full details on data collection, preprocessing, and model evaluation see [machine_learning/machine_learning.md](machine_learning/machine_learning.md).
+For full details on data collection, preprocessing, and model evaluation see [machine_learning](docs/machine_learning.md).
 
-**Reproducing accuracy metrics:**
-1. Collect test data using `machine_learning/data_collector.py` with the device connected over serial.
-2. Run preprocessing: `python machine_learning/preprocess.py`
-3. Train and evaluate: `python machine_learning/random_forest/train.py` — prints overall accuracy on the held-out test set.
-4. The reported 91–94% RF accuracy is measured on a held-out 20% split of 900 labeled gesture samples (720 train / 180 test).
+- The device's resource usage statistics are displayed when successfully build
 
-**Reproducing latency measurements:**
-- TODO: document serial log format and expected timing output once firmware is finalized.
+![Build Output](images/Build_Output.png)
 
-**Power measurement:**
-- Use a Nordic PPK2 (Power Profiler Kit II) connected to the DK's power measurement pins to observe current draw during idle and inference bursts.
-
-### vi. Offline Mode
-
-TODO: document offline behavior and BLE reconnection flow once firmware is finalized.
+- Once the device is flashed the following messages must be visible on the serial terminal indicating a successful startup:
+```bash
+[00:00:00.123,456] <inf> app: Setup Initialization
+[00:00:00.234,567] <inf> app: IMU Setup Initialization
+[00:00:00.345,678] <inf> app: IMU detected, name: lsm6ds3
+[00:00:00.456,789] <inf> app: Accelerometer ODR set to 104.000000 Hz
+[00:00:00.567,890] <inf> app: Gyroscope ODR set to 104.000000 Hz
+[00:00:00.678,901] <inf> app: IMU trigger initialized
+[00:00:00.789,012] <inf> app: Motion threshold and duration set to 32 & 1
+[00:00:00.890,123] <inf> app: IMU Setup Successful
+```
 
 ## Troubleshooting
 
