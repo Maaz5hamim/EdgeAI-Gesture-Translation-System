@@ -61,7 +61,7 @@ typedef struct {
 #define DEFAULT_KEY_HOLD_MS           50
 #define DEFAULT_KEY_GAP_MS            10
 #define DEFAULT_KEY_REPEAT_COUNT       10
-#define DEFAULT_KEY_REPEAT_COUNT_VERT  7
+#define DEFAULT_KEY_REPEAT_COUNT_VERT  20
 #define DEFAULT_KEY_REPEAT_COUNT_HORIZ  1
 
 /* Thread configuration */

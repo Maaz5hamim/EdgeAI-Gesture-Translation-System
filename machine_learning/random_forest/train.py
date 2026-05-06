@@ -19,7 +19,7 @@ X_flattened = X.reshape(X.shape[0], -1)
 # Split and Train
 X_train, X_test, y_train, y_test = train_test_split(X_flattened, y, test_size=0.2)
 clf = RandomForestClassifier(
-    n_estimators=25,  
+    n_estimators=35,  
     max_depth=10,       
     min_samples_leaf=5,   
     random_state=42
