@@ -240,8 +240,8 @@ This version is more stable and resource-efficient for the nRF54L15.
 **Reproducing accuracy metrics:**
 1. Collect test data using `machine_learning/data_collector.py` with the device connected over serial.
 2. Run preprocessing: `python machine_learning/preprocess.py`
-3. Train and evaluate: `python machine_learning/random_forest/train.py` — prints per-class accuracy and confusion matrix.
-4. The reported 91–94% RF accuracy is measured on a held-out 20% split of ~800 labeled gesture samples.
+3. Train and evaluate: `python machine_learning/random_forest/train.py` — prints overall accuracy on the held-out test set.
+4. The reported 91–94% RF accuracy is measured on a held-out 20% split of 900 labeled gesture samples (720 train / 180 test).
 
 **Reproducing latency measurements:**
 - Inference time is printed to serial on each gesture event (see expected log above).
